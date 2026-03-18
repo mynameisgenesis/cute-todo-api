@@ -4,6 +4,7 @@ go 1.26.1
 
 require (
 	github.com/99designs/gqlgen v0.17.88
+	github.com/lib/pq v1.11.2
 	github.com/vektah/gqlparser/v2 v2.5.32
 )
 
@@ -14,7 +15,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
-	github.com/lib/pq v1.11.2 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/sosodev/duration v1.4.0 // indirect
 	github.com/urfave/cli/v3 v3.7.0 // indirect
 	golang.org/x/mod v0.33.0 // indirect

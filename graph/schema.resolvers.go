@@ -9,21 +9,51 @@ import (
 	"context"
 	"cute-todo-api/graph/model"
 	"fmt"
+
+	_ "github.com/lib/pq"
 )
 
 // CreateTask is the resolver for the createTask field.
 func (r *mutationResolver) CreateTask(ctx context.Context, title string, priority string) (*model.Task, error) {
-	panic(fmt.Errorf("not implemented: CreateTask - createTask"))
+	t := &model.Task{}
+	err := r.DB.QueryRowContext(ctx,
+		`INSERT INTO tasks (title, priority) VALUES ($1, $2)
+         RETURNING id, title, status, priority, created_at`,
+		title, priority,
+	).Scan(&t.ID, &t.Title, &t.Status, &t.Priority, &t.CreatedAt)
+	return t, err
 }
 
 // UpdateStatus is the resolver for the updateStatus field.
 func (r *mutationResolver) UpdateStatus(ctx context.Context, id string, status string) (*model.Task, error) {
-	panic(fmt.Errorf("not implemented: UpdateStatus - updateStatus"))
+	t := &model.Task{}
+	err := r.DB.QueryRowContext(ctx,
+		`UPDATE tasks SET status=$1 WHERE id=$2
+         RETURNING id, title, status, priority, created_at`,
+		status, id,
+	).Scan(&t.ID, &t.Title, &t.Status, &t.Priority, &t.CreatedAt)
+	return t, err
 }
 
 // Tasks is the resolver for the tasks field.
 func (r *queryResolver) Tasks(ctx context.Context) ([]*model.Task, error) {
-	panic(fmt.Errorf("not implemented: Tasks - tasks"))
+	rows, err := r.DB.QueryContext(ctx,
+		`SELECT id, title, status, priority, created_at FROM tasks ORDER BY created_at DESC`,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("db query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var tasks []*model.Task
+	for rows.Next() {
+		t := &model.Task{}
+		if err := rows.Scan(&t.ID, &t.Title, &t.Status, &t.Priority, &t.CreatedAt); err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, t)
+	}
+	return tasks, nil
 }
 
 // Task is the resolver for the task field.
@@ -39,18 +69,3 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-*/
