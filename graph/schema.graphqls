@@ -1,5 +1,5 @@
 type Task {
-  id: ID! 
+  id: ID!
   title: String!
   status: String!
   priority: String!
@@ -8,10 +8,10 @@ type Task {
 
 type Query {
   tasks: [Task!]!
-  task(id: ID!)
+  task(id: ID!): Task
 }
 
 type Mutation {
   createTask(title: String!, priority: String!): Task!
-  updateStatus(id: ID!, status String!): Task!
+  updateStatus(id: ID!, status: String!): Task!
 }
