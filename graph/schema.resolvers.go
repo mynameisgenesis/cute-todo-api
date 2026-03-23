@@ -58,9 +58,13 @@ func (r *queryResolver) Tasks(ctx context.Context) ([]*model.Task, error) {
 
 // Task is the resolver for the task field.
 func (r *queryResolver) Task(ctx context.Context, id string) (*model.Task, error) {
-	panic(fmt.Errorf("not implemented: Task - task"))
+	t := &model.Task{}
+	err := r.DB.QueryRowContext(ctx,
+		`SELECT id, title, status, priority, created_at FROM tasks WHERE id=$1`,
+		id,
+	).Scan(&t.ID, &t.Title, &t.Status, &t.Priority, &t.CreatedAt)
+	return t, err
 }
-
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
