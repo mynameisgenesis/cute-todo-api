@@ -1,0 +1,7 @@
+envFrom:
+  - secretRef:
+      name: DATABASE_URL
+  - secretRef:
+      name: PORT
+  - secretRef:
+      name: FRONTEND_URL
